@@ -1,0 +1,27 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "types": "index.d.ts",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "devDependencies": {
+    "@types/cesium": "^1.67.13",
+    "parcel": "1.12.3",
+    "parcel-plugin-static-files-copy": "^2.6.0",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "cesium": "^1.82.1"
+  },
+  "staticFiles": {
+    "staticPath": [{
+      "staticPath": "static/Cesium/",
+      "staticOutDir": "cesium"
+    }
+    ]
+  }
+}
