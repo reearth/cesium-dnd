@@ -10,6 +10,9 @@ npm install cesium cesium-drag-and-drop
 yarn add cesium cesium-drag-and-drop
 ```
 
+## Demo
+![demo](./demo.gif)
+
 ## Usage
 ### Basic
 ```
