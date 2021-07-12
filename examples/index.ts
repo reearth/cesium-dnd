@@ -1,5 +1,5 @@
-import { Viewer, Cartesian3, Color } from 'cesium';
-import CesiumDnD from '../src';
+import { Viewer, Cartesian3, Color } from "cesium";
+import CesiumDnD from "../src";
 
 declare global {
   interface Window {
@@ -7,13 +7,11 @@ declare global {
   }
 }
 
-if (typeof window !== 'undefined') {
-  window.CESIUM_BASE_URL = '/cesium';
-}
+window.CESIUM_BASE_URL = "/cesium";
 
-const viewer = new Viewer('cesium');
+const viewer = new Viewer("cesium");
 viewer.entities.add({
-  name: 'Example1',
+  name: "Example1",
   position: Cartesian3.fromDegrees(-100.0, 40.0, 100000.0),
   box: {
     dimensions: new Cartesian3(500000.0, 500000.0, 500000.0),
@@ -23,7 +21,7 @@ viewer.entities.add({
   },
 });
 viewer.entities.add({
-  name: 'Example2',
+  name: "Example2",
   position: Cartesian3.fromDegrees(-120.0, 30.0, 1000.0),
   ellipsoid: {
     radii: new Cartesian3(500000.0, 500000.0, 500000.0),
@@ -32,13 +30,13 @@ viewer.entities.add({
 });
 
 new CesiumDnD(viewer, {
-  onDrag: (e, position) => {
-    console.log('position -------', e, position);
+  onDrag: (...args) => {
+    console.log("position -------", ...args);
   },
-  onDrop: (e, position) => {
-    console.log('drop ----', e, position);
+  onDrop: (...args) => {
+    console.log("drop ----", ...args);
   },
-  onDragging: (e, position) => {
-    console.log('dragging ---', e, position);
+  onDragging: (...args) => {
+    console.log("dragging ---", ...args);
   },
 });
