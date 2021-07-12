@@ -37,16 +37,16 @@
     "arrowParens": "avoid",
     "proseWrap": "preserve"
   },
-  "name": "cesium-drag-and-drop",
+  "name": "cesium-dnd",
   "author": "HideBa",
-  "module": "dist/cesium-drag-and-drop.esm.js",
+  "module": "dist/cesium-dnd.esm.js",
   "size-limit": [
     {
-      "path": "dist/cesium-drag-and-drop.cjs.production.min.js",
+      "path": "dist/cesium-dnd.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/cesium-drag-and-drop.esm.js",
+      "path": "dist/cesium-dnd.esm.js",
       "limit": "10 KB"
     }
   ],

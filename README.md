@@ -1,4 +1,4 @@
-# cesium-drag-and-drop
+# cesium-dnd
 
 You can allows your cesium entities to be draggable with less code.
 

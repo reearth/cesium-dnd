@@ -1,9 +1,10 @@
 {
-  "name": "example",
+  "name": "cesium-dnd-example",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "types": "index.d.ts",
+  "private": true,
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html"
