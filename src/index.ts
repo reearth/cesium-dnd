@@ -8,7 +8,7 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Viewer,
-} from 'cesium';
+} from "cesium";
 
 export type Position = {
   longitude: number;
@@ -34,7 +34,7 @@ export default class CesiumDnD {
   private _position: Cartesian3 | undefined;
   private _callbackProperty = new CallbackProperty(
     () => this._position ?? this._initialPosition,
-    false
+    false,
   );
 
   constructor(viewer: Viewer, options?: Options) {
@@ -49,18 +49,9 @@ export default class CesiumDnD {
 
   enable() {
     this._handler = new ScreenSpaceEventHandler(this.viewer.canvas);
-    this._handler.setInputAction(
-      this._handleDrag.bind(this),
-      ScreenSpaceEventType.LEFT_DOWN
-    );
-    this._handler.setInputAction(
-      this._handleDragging.bind(this),
-      ScreenSpaceEventType.MOUSE_MOVE
-    );
-    this._handler.setInputAction(
-      this._handleDrop.bind(this),
-      ScreenSpaceEventType.LEFT_UP
-    );
+    this._handler.setInputAction(this._handleDrag.bind(this), ScreenSpaceEventType.LEFT_DOWN);
+    this._handler.setInputAction(this._handleDragging.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+    this._handler.setInputAction(this._handleDrop.bind(this), ScreenSpaceEventType.LEFT_UP);
   }
 
   disable() {
@@ -91,7 +82,7 @@ export default class CesiumDnD {
       this._initialPosition = entity.position;
       this._initialEnableRotate = this.viewer.scene.screenSpaceCameraController.enableRotate;
       this.viewer.scene.screenSpaceCameraController.enableRotate = false;
-      this.viewer.canvas.addEventListener('blur', this._cancelDrop);
+      this.viewer.canvas.addEventListener("blur", this._cancelDrop);
 
       this._position = pos
         ? Cartesian3.fromDegrees(pos.longitude, pos.latitude, pos.height)
@@ -100,20 +91,13 @@ export default class CesiumDnD {
     }, 200);
   }
 
-  private _handleDragging(e: {
-    startPosition: Cartesian2;
-    endPosition: Cartesian2;
-  }) {
+  private _handleDragging(e: { startPosition: Cartesian2; endPosition: Cartesian2 }) {
     clearTimeout(this._timeout);
     if (!this._entity || this.viewer.isDestroyed()) return;
 
     const pos = this._convertCartesian2ToPosition(e.endPosition);
     if (pos) {
-      this._position = Cartesian3.fromDegrees(
-        pos.longitude,
-        pos.latitude,
-        pos.height
-      );
+      this._position = Cartesian3.fromDegrees(pos.longitude, pos.latitude, pos.height);
     }
 
     this.options?.onDragging?.(this._entity, pos);
@@ -126,11 +110,7 @@ export default class CesiumDnD {
     const entity = this._entity;
     const pos = this._convertCartesian2ToPosition(e.position);
     if (pos) {
-      entity.position = Cartesian3.fromDegrees(
-        pos.longitude,
-        pos.latitude,
-        pos.height
-      ) as any;
+      entity.position = Cartesian3.fromDegrees(pos.longitude, pos.latitude, pos.height) as any;
     } else {
       entity.position = this._initialPosition;
     }
@@ -140,7 +120,7 @@ export default class CesiumDnD {
     this._initialPosition = undefined;
     this._timeout = undefined;
     this.viewer.scene.screenSpaceCameraController.enableRotate = this._initialEnableRotate;
-    this.viewer.canvas.removeEventListener('blur', this._cancelDrop);
+    this.viewer.canvas.removeEventListener("blur", this._cancelDrop);
 
     this.options?.onDrop?.(entity, pos);
   }
@@ -156,19 +136,17 @@ export default class CesiumDnD {
     this._initialPosition = undefined;
     this._timeout = undefined;
     this.viewer.scene.screenSpaceCameraController.enableRotate = this._initialEnableRotate;
-    this.viewer.canvas.removeEventListener('blur', this._cancelDrop);
+    this.viewer.canvas.removeEventListener("blur", this._cancelDrop);
   };
 
   private _pick(position: Cartesian2): Entity | undefined {
     return this.viewer.scene.pick(position)?.id;
   }
 
-  private _convertCartesian2ToPosition(
-    position: Cartesian2
-  ): Position | undefined {
+  private _convertCartesian2ToPosition(position: Cartesian2): Position | undefined {
     const cartesian = this.viewer.scene.camera.pickEllipsoid(
       new Cartesian2(position.x, position.y),
-      this.viewer.scene.globe.ellipsoid
+      this.viewer.scene.globe.ellipsoid,
     );
     if (!cartesian) return;
 

@@ -1,3 +1,3 @@
-describe('CesiumDnd', () => {
-  it('works', () => {});
+describe("CesiumDnd", () => {
+  it("works", () => {});
 });
