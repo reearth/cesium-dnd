@@ -26,10 +26,16 @@
     }
   },
   "prettier": {
-    "printWidth": 80,
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
     "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
+    "singleQuote": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": true,
+    "arrowParens": "avoid",
+    "proseWrap": "preserve"
   },
   "name": "cesium-drag-and-drop",
   "author": "HideBa",
