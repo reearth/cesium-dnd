@@ -41,14 +41,14 @@
   },
   "name": "cesium-dnd",
   "author": "HideBa",
-  "module": "dist/cesium-dnd.esm.js",
+  "module": "dist/cesiumdnd.esm.js",
   "size-limit": [
     {
-      "path": "dist/cesium-dnd.cjs.production.min.js",
+      "path": "dist/cesiumdnd.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/cesium-dnd.esm.js",
+      "path": "dist/cesiumdnd.esm.js",
       "limit": "10 KB"
     }
   ],
