@@ -1,9 +1,9 @@
-const html = require('@rollup/plugin-html');
-
 module.exports = {
-  input: 'src/index.ts',
-  rollup(config, options) {
-    config.plugins.push(html());
+  rollup(config) {
+    config.output.globals = {
+      ...config.output.globals,
+      cesium: 'Cesium',
+    };
     return config;
   },
 };

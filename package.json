@@ -12,14 +12,16 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsdx build",
+    "build": "tsdx build --format cjs,esm,umd --name CesiumDnD",
     "test": "tsdx test",
     "lint": "tsdx lint",
-    "prepare": "tsdx build",
+    "prepare": "tsdx build --format cjs,esm,umd --name CesiumDnD",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "cesium": "*"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "tsdx lint"
@@ -51,16 +53,13 @@
     }
   ],
   "devDependencies": {
-    "@rollup/plugin-html": "^0.2.3",
-    "@size-limit/preset-small-lib": "^4.10.2",
-    "husky": "^6.0.0",
-    "size-limit": "^4.10.2",
+    "@types/cesium": "^1.67.14",
+    "@size-limit/preset-small-lib": "^5.0.1",
+    "cesium": "^1.83.0",
+    "husky": "^7.0.1",
+    "size-limit": "^5.0.1",
     "tsdx": "^0.14.1",
-    "tslib": "^2.2.0",
-    "typescript": "^4.2.4"
-  },
-  "dependencies": {
-    "@types/cesium": "^1.67.13",
-    "cesium": "^1.81.0"
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.5"
   }
 }
