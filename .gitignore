@@ -2,7 +2,3 @@
 .DS_Store
 node_modules
 dist
-/examples/node_modules
-/examples/.cache
-examples/dist
-static/

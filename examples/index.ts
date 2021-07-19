@@ -1,49 +1,42 @@
-import * as Cesium from 'cesium';
+import { Viewer, Cartesian3, Color } from "cesium";
+import CesiumDnD from "../src";
 
-import CesiumDnD from '../.';
-import type {Options, Position} from "../.";
-
-if (typeof window !== 'undefined') {
-  window.CESIUM_BASE_URL = '/cesium/';
+declare global {
+  interface Window {
+    CESIUM_BASE_URL?: string;
+  }
 }
 
-(function() {
-  'use strict';
-  const viewer = new Cesium.Viewer('cesium');
-  viewer.entities.add({
-    name: 'Example1',
-    position: Cesium.Cartesian3.fromDegrees(-100.0, 40.0, 100000.0),
-    box: {
-      dimensions: new Cesium.Cartesian3(500000.0, 500000.0, 500000.0),
-      material: Cesium.Color.AQUA,
-      outline: true,
-      outlineColor: Cesium.Color.AQUA,
-    },
-  });
-  viewer.entities.add({
-    name: 'Example2',
-    position: Cesium.Cartesian3.fromDegrees(-120.0, 30.0, 1000.0),
-    ellipsoid: {
-      radii: new Cesium.Cartesian3(500000.0, 500000.0, 500000.0),
-      material: Cesium.Color.WHITE,
-    },
-  });
+window.CESIUM_BASE_URL = "/cesium";
 
-  const onDrag = (e: Cesium.Entity, position: Position) =>
-    console.log('position -------', e, position);
-  const onDragging = (
-    e: Cesium.Entity,
-    startPosition: Position,
-    endPosition: Position
-  ) => console.log('dragging---', e, startPosition, endPosition);
-  const onDrop = (e: Cesium.Entity, position: Position) => {
-    console.log('drop ----', e, position);
-  };
-  const options: Options = {
-    onDrag: onDrag,
-    onDrop: onDrop,
-    onDragging: onDragging,
-  };
-  const cesiumDnD = new CesiumDnD(viewer, options);
-  cesiumDnD.enableDnD();
-})();
+const viewer = new Viewer("cesium");
+viewer.entities.add({
+  name: "Example1",
+  position: Cartesian3.fromDegrees(-100.0, 40.0, 100000.0),
+  box: {
+    dimensions: new Cartesian3(500000.0, 500000.0, 500000.0),
+    material: Color.AQUA,
+    outline: true,
+    outlineColor: Color.AQUA,
+  },
+});
+viewer.entities.add({
+  name: "Example2",
+  position: Cartesian3.fromDegrees(-120.0, 30.0, 1000.0),
+  ellipsoid: {
+    radii: new Cartesian3(500000.0, 500000.0, 500000.0),
+    material: Color.WHITE,
+  },
+});
+
+new CesiumDnD(viewer, {
+  onDrag: (...args) => {
+    console.log("position -------", ...args);
+  },
+  onDrop: (...args) => {
+    console.log("drop ----", ...args);
+  },
+  onDragging: (...args) => {
+    console.log("dragging ---", ...args);
+  },
+});

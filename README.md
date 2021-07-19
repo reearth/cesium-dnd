@@ -1,68 +1,92 @@
-# cesium-drag-and-drop
+# cesium-dnd
 
-You can allows your cesium entities to be draggable with less code.
+cesium-dnd makes Cesium entities draggable with less code. [Demo](https://reearth.github.io/cesium-dnd/)
+
+![Screenshot](./demo.gif)
 
 ## Getting Started
-To install
-```
-npm install cesium cesium-drag-and-drop
-//or
-yarn add cesium cesium-drag-and-drop
+
+To install:
+
+```sh
+npm install cesium cesium-dnd
+# or
+yarn add cesium cesium-dnd
 ```
 
-## Demo
-![demo](./demo.gif)
+Or
+
+```html
+<script src="https://unpkg.com/cesium-dnd@1.0.0/dist/cesiumdnd.umd.production.min.js"></script>
+<script>
+  const viewer = new Cesium.Viewer("cesiumContainer");
+  new CesiumDnD(viewer);
+</script>
+```
 
 ## Usage
-### Basic
-```
-//init cesium-drag-and-drop
+
+```js
+// Init cesium-dnd
 const viewer = new Cesium.Viewer("cesiumContainer");
-const cesiumDnD = new CesiumDnD(viewer);
 
-//Enable drag and drop
-cesiumDnD.enableDnD();
+const cesiumDnD = new CesiumDnD(viewer, { // CesiumWidget is also acceptable
+  initialDisabled: false,
+  onDrag: (entity, position, context) => {
+    // ...
+  },
+  onDragging: (entity, position, context) => {
+    // ...
+  },
+  onDrop: (entity, position, context) => {
+    // ...
+  }
+});
 
-//Disable drag and drop
-cesiumDnD.disableDnD();
+// Disable drag and drop
+cesiumDnD.disable();
+
+// Enable drag and drop
+cesiumDnD.enable();
 ```
 
-### Want to add your function?
-If you want to pass your functions to cesium-drag-and-drop, pass them via `options` parameter.
-
-```
-//declate your functions which are called when the entity is dragged, being dragged, dropped
-const onDrag = (e: Cesium.Entity, position: Position) =>
-  console.log(e, position);
-const onDragging = (
-  e: Cesium.Entity,
-  startPosition: Position,
-  endPosition: Position
-) => console.log(e, startPosition, endPosition);
-const onDrop = (e: Cesium.Entity, position: Position) => {
-  console.log(e, position);
+```ts
+type Context = {
+  position?: Cartesian3;
+  screenPosition: Cartesian2;
+  initialPosition?: PositionProperty;
+  initialScreenPosition: Cartesian2;
 };
 
-//then, pass them as parameter
-const options: Options = {
-  onDrag,
-  onDrop,
-  onDragging,
-};
-
-//when you instantiate cesium-drag-and-drop, pass the options as constructor parameters.
-const cesiumDnD = new CesiumDnD(viewer, options);
-//your functions will be executed when the event occurs
-```
-
-The values your functions will recieve are
-* Entity
-* Position
-```
 type Position = {
-  longitude: number;
-  latitude: number;
-  height?: number;
+  /** Degrees */
+  lat: number;
+  /** Degrees */
+  lng: number;
+  /** Meters */
+  height: number;
+};
+
+type Options = {
+  /** If true, prevent dnd to be automatically enabled. */
+  initialDisabled?: boolean;
+  /** If false is returned, dragging will not start. */
+  onDrag?: (e: Entity, position: Position | undefined, context: Context) => void | boolean;
+  /**
+   * If undefined is returned, new position will be automatically set to the entity. (default)
+   * If false is returned, new position will not be set to the entity.
+   * Otherwise, the return value will be set as new position to the entity.
+   */
+  onDragging?: (
+    e: Entity,
+    position: Position | undefined,
+    context: Context & { previousScreenPosition: Cartesian2 },
+  ) => void | false | Cartesian3;
+  /**
+   * If false is returned, new position will not be set to the entity and position of the entity will be reverted.
+   * Otherwise, new position will be automatically set to the entity.
+   */
+  onDrop?: (e: Entity, position: Position | undefined, context: Context) => void | boolean;
 };
 ```
 
