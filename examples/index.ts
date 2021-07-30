@@ -31,7 +31,7 @@ viewer.entities.add({
 
 new CesiumDnD(viewer, {
   onDrag: (...args) => {
-    console.log("position -------", ...args);
+    console.log("drag start -------", ...args);
   },
   onDrop: (...args) => {
     console.log("drop ----", ...args);

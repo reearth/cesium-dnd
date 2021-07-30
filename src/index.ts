@@ -119,6 +119,7 @@ export default class CesiumDnD {
     this._timeout = window.setTimeout(() => {
       if (this._entity || this.viewer.isDestroyed()) return;
       this._timeout = undefined;
+      this._initialScreenPosition = e.position.clone();
 
       const pos = this._convertCartesian2ToPosition(e.position);
       const ctx = this._context(pos, e.position);
@@ -130,7 +131,6 @@ export default class CesiumDnD {
 
       this._entity = entity;
       this._initialPosition = entity.position;
-      this._initialScreenPosition = e.position.clone();
       this._initialEnableRotate = this.viewer.scene.screenSpaceCameraController.enableRotate;
       this.viewer.scene.screenSpaceCameraController.enableRotate = false;
       this.viewer.canvas.addEventListener("blur", this.cancelDragging);
@@ -176,7 +176,6 @@ export default class CesiumDnD {
     this._position = undefined;
     this._entity = undefined;
     this._initialPosition = undefined;
-    this._initialScreenPosition = undefined;
     this._timeout = undefined;
     this.viewer.scene.screenSpaceCameraController.enableRotate = this._initialEnableRotate;
     this.viewer.canvas.removeEventListener("blur", this.cancelDragging);
@@ -190,6 +189,7 @@ export default class CesiumDnD {
     ) {
       entity.position = pos as any;
     }
+    this._initialScreenPosition = undefined;
   };
 
   private _pick(position: Cartesian2): Entity | undefined {
