@@ -3,8 +3,8 @@ import {
   Cartesian2,
   Cartesian3,
   CesiumWidget,
+  Ellipsoid,
   Entity,
-  Math as CesiumMath,
   PositionProperty,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
@@ -18,20 +18,11 @@ export type Context = {
   initialScreenPosition: Cartesian2;
 };
 
-export type Position = {
-  /** Degrees */
-  lat: number;
-  /** Degrees */
-  lng: number;
-  /** Meters */
-  height: number;
-};
-
 export type Options = {
   /** If true, prevent dnd to be automatically enabled. */
   initialDisabled?: boolean;
   /** If false is returned, dragging will not start. */
-  onDrag?: (e: Entity, position: Position | undefined, context: Context) => void | boolean;
+  onDrag?: (e: Entity, position: Cartesian3 | undefined, context: Context) => void | boolean;
   /**
    * If undefined is returned, new position will be automatically set to the entity. (default)
    * If false is returned, new position will not be set to the entity.
@@ -39,14 +30,14 @@ export type Options = {
    */
   onDragging?: (
     e: Entity,
-    position: Position | undefined,
+    position: Cartesian3 | undefined,
     context: Context & { previousScreenPosition: Cartesian2 },
   ) => void | false | Cartesian3;
   /**
    * If false is returned, new position will not be set to the entity and position of the entity will be reverted.
    * Otherwise, new position will be automatically set to the entity.
    */
-  onDrop?: (e: Entity, position: Position | undefined, context: Context) => void | boolean;
+  onDrop?: (e: Entity, position: Cartesian3 | undefined, context: Context) => void | boolean;
 };
 
 export default class CesiumDnD {
@@ -60,6 +51,7 @@ export default class CesiumDnD {
   private _initialScreenPosition?: Cartesian2;
   private _entity?: Entity;
   private _position: Cartesian3 | undefined;
+  private _ellipsoid?: Ellipsoid;
   private _callbackProperty = new CallbackProperty(
     () => this._position ?? this._initialPosition,
     false,
@@ -119,23 +111,29 @@ export default class CesiumDnD {
     this._timeout = window.setTimeout(() => {
       if (this._entity || this.viewer.isDestroyed()) return;
       this._timeout = undefined;
+      this._initialPosition = entity.position;
       this._initialScreenPosition = e.position.clone();
+
+      const c = entity.position?.getValue(this.viewer.clock.currentTime);
+      if (c) {
+        const height = this.viewer.scene.globe.ellipsoid.cartesianToCartographic(c).height;
+        this._ellipsoid = CesiumDnD.enlargeEllipsoid(this.viewer.scene.globe.ellipsoid, height);
+      }
 
       const pos = this._convertCartesian2ToPosition(e.position);
       const ctx = this._context(pos, e.position);
-      if (
-        ctx &&
-        this.options?.onDrag?.(entity, this._convertCartesian3ToPosition(pos), ctx) === false
-      )
+      if (ctx && this.options?.onDrag?.(entity, pos, ctx) === false) {
+        this._initialPosition = undefined;
+        this._initialScreenPosition = undefined;
+        this._ellipsoid = undefined;
         return;
+      }
 
+      this._position = pos;
       this._entity = entity;
-      this._initialPosition = entity.position;
       this._initialEnableRotate = this.viewer.scene.screenSpaceCameraController.enableRotate;
       this.viewer.scene.screenSpaceCameraController.enableRotate = false;
       this.viewer.canvas.addEventListener("blur", this.cancelDragging);
-
-      this._position = pos;
       entity.position = this._callbackProperty as any;
     }, 200);
   };
@@ -145,18 +143,13 @@ export default class CesiumDnD {
     if (!this._entity || this.viewer.isDestroyed()) return;
 
     const pos = this._convertCartesian2ToPosition(e.endPosition);
-
     const ctx = this._context(pos, e.endPosition);
     if (!ctx) return;
 
-    const newPos = this.options?.onDragging?.(
-      this._entity,
-      this._convertCartesian3ToPosition(pos),
-      {
-        ...ctx,
-        previousScreenPosition: e.startPosition,
-      },
-    );
+    const newPos = this.options?.onDragging?.(this._entity, pos, {
+      ...ctx,
+      previousScreenPosition: e.startPosition,
+    });
     if (newPos === false) return;
 
     if (typeof newPos !== "undefined") {
@@ -175,21 +168,20 @@ export default class CesiumDnD {
 
     this._position = undefined;
     this._entity = undefined;
-    this._initialPosition = undefined;
     this._timeout = undefined;
     this.viewer.scene.screenSpaceCameraController.enableRotate = this._initialEnableRotate;
     this.viewer.canvas.removeEventListener("blur", this.cancelDragging);
 
     const pos = this._convertCartesian2ToPosition(e.position);
     const ctx = this._context(pos, e.position);
-    if (
-      ctx &&
-      this.options?.onDrop?.(entity, this._convertCartesian3ToPosition(pos), ctx) !== false &&
-      pos
-    ) {
+
+    this._initialPosition = undefined;
+    this._initialScreenPosition = undefined;
+    this._ellipsoid = undefined;
+
+    if (ctx && this.options?.onDrop?.(entity, pos, ctx) !== false && pos) {
       entity.position = pos as any;
     }
-    this._initialScreenPosition = undefined;
   };
 
   private _pick(position: Cartesian2): Entity | undefined {
@@ -211,19 +203,12 @@ export default class CesiumDnD {
 
   private _convertCartesian2ToPosition(position: Cartesian2): Cartesian3 | undefined {
     return this.viewer.scene.camera.pickEllipsoid(
-      new Cartesian2(position.x, position.y),
-      this.viewer.scene.globe.ellipsoid,
+      position,
+      this._ellipsoid ?? this.viewer.scene.globe.ellipsoid,
     );
   }
 
-  private _convertCartesian3ToPosition(pos?: Cartesian3): Position | undefined {
-    if (!pos) return;
-
-    const cartographic = this.viewer.scene.globe.ellipsoid.cartesianToCartographic(pos);
-    return {
-      lat: CesiumMath.toDegrees(cartographic.latitude),
-      lng: CesiumMath.toDegrees(cartographic.longitude),
-      height: cartographic.height,
-    };
+  private static enlargeEllipsoid(e: Ellipsoid, m: number): Ellipsoid {
+    return new Ellipsoid(e.radii.x + m, e.radii.y + m, e.radii.z + m);
   }
 }
