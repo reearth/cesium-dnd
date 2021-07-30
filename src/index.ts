@@ -21,6 +21,11 @@ export type Context = {
 export type Options = {
   /** If true, prevent dnd to be automatically enabled. */
   initialDisabled?: boolean;
+  /** The number of milliseconds to wait before starting the drag */
+  dragDelay?: number;
+  dragInputType?: ScreenSpaceEventType;
+  draggingInputType?: ScreenSpaceEventType;
+  dropInputType?: ScreenSpaceEventType;
   /** If false is returned, dragging will not start. */
   onDrag?: (e: Entity, position: Cartesian3 | undefined, context: Context) => void | boolean;
   /**
@@ -71,9 +76,18 @@ export default class CesiumDnD {
 
   enable() {
     this._handler = new ScreenSpaceEventHandler(this.viewer.canvas);
-    this._handler.setInputAction(this._handleDrag, ScreenSpaceEventType.LEFT_DOWN);
-    this._handler.setInputAction(this._handleDragging, ScreenSpaceEventType.MOUSE_MOVE);
-    this._handler.setInputAction(this._handleDrop, ScreenSpaceEventType.LEFT_UP);
+    this._handler.setInputAction(
+      this._handleDrag,
+      this.options?.dragInputType ?? ScreenSpaceEventType.LEFT_DOWN,
+    );
+    this._handler.setInputAction(
+      this._handleDragging,
+      this.options?.draggingInputType ?? ScreenSpaceEventType.MOUSE_MOVE,
+    );
+    this._handler.setInputAction(
+      this._handleDrop,
+      this.options?.dropInputType ?? ScreenSpaceEventType.LEFT_UP,
+    );
   }
 
   disable() {
@@ -102,13 +116,12 @@ export default class CesiumDnD {
   };
 
   private _handleDrag = (e: { position: Cartesian2 }) => {
-    if (this._entity || this.viewer.isDestroyed()) return;
+    if (this._entity || this.viewer.isDestroyed() || !e?.position) return;
 
     const entity = this._pick(e.position);
     if (!entity) return;
 
-    window.clearTimeout(this._timeout);
-    this._timeout = window.setTimeout(() => {
+    const start = () => {
       if (this._entity || this.viewer.isDestroyed()) return;
       this._timeout = undefined;
       this._initialPosition = entity.position;
@@ -135,12 +148,19 @@ export default class CesiumDnD {
       this.viewer.scene.screenSpaceCameraController.enableRotate = false;
       this.viewer.canvas.addEventListener("blur", this.cancelDragging);
       entity.position = this._callbackProperty as any;
-    }, 200);
+    };
+
+    window.clearTimeout(this._timeout);
+    if (typeof this.options?.dragDelay === "undefined") {
+      start();
+      return;
+    }
+    this._timeout = window.setTimeout(start, this.options.dragDelay);
   };
 
   private _handleDragging = (e: { startPosition: Cartesian2; endPosition: Cartesian2 }) => {
     clearTimeout(this._timeout);
-    if (!this._entity || this.viewer.isDestroyed()) return;
+    if (!this._entity || this.viewer.isDestroyed() || !e?.endPosition) return;
 
     const pos = this._convertCartesian2ToPosition(e.endPosition);
     const ctx = this._context(pos, e.endPosition);
@@ -161,7 +181,7 @@ export default class CesiumDnD {
 
   private _handleDrop = (e: { position: Cartesian2 }) => {
     clearTimeout(this._timeout);
-    if (!this._entity || this.viewer.isDestroyed()) return;
+    if (!this._entity || this.viewer.isDestroyed() || !e?.position) return;
 
     const entity = this._entity;
     entity.position = this._initialPosition;
