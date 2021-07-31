@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.2",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -53,8 +53,8 @@
     }
   ],
   "devDependencies": {
-    "@types/cesium": "^1.67.14",
     "@size-limit/preset-small-lib": "^5.0.1",
+    "@types/cesium": "^1.67.14",
     "cesium": "^1.83.0",
     "husky": "^7.0.1",
     "size-limit": "^5.0.1",
