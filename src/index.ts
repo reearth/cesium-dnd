@@ -53,6 +53,7 @@ export default class CesiumDnD {
   private _handler?: ScreenSpaceEventHandler;
   private _initialEnableRotate = true;
   private _initialPosition?: PositionProperty;
+  private _initialEnableTranslate = true;
   private _initialScreenPosition?: Cartesian2;
   private _entity?: Entity;
   private _position: Cartesian3 | undefined;
@@ -112,6 +113,7 @@ export default class CesiumDnD {
     this._initialScreenPosition = undefined;
     this._timeout = undefined;
     this.viewer.scene.screenSpaceCameraController.enableRotate = this._initialEnableRotate;
+    this.viewer.scene.screenSpaceCameraController.enableTranslate = this._initialEnableTranslate;
     this.viewer.canvas.removeEventListener("blur", this.cancelDragging);
   };
 
@@ -145,7 +147,12 @@ export default class CesiumDnD {
       this._position = pos;
       this._entity = entity;
       this._initialEnableRotate = this.viewer.scene.screenSpaceCameraController.enableRotate;
-      this.viewer.scene.screenSpaceCameraController.enableRotate = false;
+      this._initialEnableTranslate = this.viewer.scene.screenSpaceCameraController.enableTranslate;
+      if (this.viewer.scene.mode === 3) {
+        this.viewer.scene.screenSpaceCameraController.enableRotate = false;
+      } else {
+        this.viewer.scene.screenSpaceCameraController.enableTranslate = false;
+      }
       this.viewer.canvas.addEventListener("blur", this.cancelDragging);
       entity.position = this._callbackProperty as any;
     };
@@ -190,6 +197,7 @@ export default class CesiumDnD {
     this._entity = undefined;
     this._timeout = undefined;
     this.viewer.scene.screenSpaceCameraController.enableRotate = this._initialEnableRotate;
+    this.viewer.scene.screenSpaceCameraController.enableTranslate = this._initialEnableTranslate;
     this.viewer.canvas.removeEventListener("blur", this.cancelDragging);
 
     const pos = this._convertCartesian2ToPosition(e.position);
