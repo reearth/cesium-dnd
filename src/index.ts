@@ -9,6 +9,7 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Viewer,
+  SceneMode,
 } from "cesium";
 
 export type Context = {
@@ -148,7 +149,7 @@ export default class CesiumDnD {
       this._entity = entity;
       this._initialEnableRotate = this.viewer.scene.screenSpaceCameraController.enableRotate;
       this._initialEnableTranslate = this.viewer.scene.screenSpaceCameraController.enableTranslate;
-      if (this.viewer.scene.mode === Cesium.SceneMode.SCENE3D) {
+      if (this.viewer.scene.mode === SceneMode.SCENE3D) {
         this.viewer.scene.screenSpaceCameraController.enableRotate = false;
       } else {
         this.viewer.scene.screenSpaceCameraController.enableTranslate = false;
