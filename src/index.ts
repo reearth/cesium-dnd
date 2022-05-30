@@ -9,6 +9,7 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Viewer,
+  SceneMode,
 } from "cesium";
 
 export type Context = {
@@ -52,6 +53,7 @@ export default class CesiumDnD {
   private _timeout?: number;
   private _handler?: ScreenSpaceEventHandler;
   private _initialEnableRotate = true;
+  private _initialEnableTranslate = true;
   private _initialPosition?: PositionProperty;
   private _initialScreenPosition?: Cartesian2;
   private _entity?: Entity;
@@ -112,6 +114,7 @@ export default class CesiumDnD {
     this._initialScreenPosition = undefined;
     this._timeout = undefined;
     this.viewer.scene.screenSpaceCameraController.enableRotate = this._initialEnableRotate;
+    this.viewer.scene.screenSpaceCameraController.enableTranslate = this._initialEnableTranslate;
     this.viewer.canvas.removeEventListener("blur", this.cancelDragging);
   };
 
@@ -145,7 +148,12 @@ export default class CesiumDnD {
       this._position = pos;
       this._entity = entity;
       this._initialEnableRotate = this.viewer.scene.screenSpaceCameraController.enableRotate;
-      this.viewer.scene.screenSpaceCameraController.enableRotate = false;
+      this._initialEnableTranslate = this.viewer.scene.screenSpaceCameraController.enableTranslate;
+      if (this.viewer.scene.mode === SceneMode.SCENE3D) {
+        this.viewer.scene.screenSpaceCameraController.enableRotate = false;
+      } else {
+        this.viewer.scene.screenSpaceCameraController.enableTranslate = false;
+      }
       this.viewer.canvas.addEventListener("blur", this.cancelDragging);
       entity.position = this._callbackProperty as any;
     };
@@ -190,6 +198,7 @@ export default class CesiumDnD {
     this._entity = undefined;
     this._timeout = undefined;
     this.viewer.scene.screenSpaceCameraController.enableRotate = this._initialEnableRotate;
+    this.viewer.scene.screenSpaceCameraController.enableTranslate = this._initialEnableTranslate;
     this.viewer.canvas.removeEventListener("blur", this.cancelDragging);
 
     const pos = this._convertCartesian2ToPosition(e.position);
