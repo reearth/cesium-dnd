@@ -52,8 +52,8 @@ export default class CesiumDnD {
   private _timeout?: number;
   private _handler?: ScreenSpaceEventHandler;
   private _initialEnableRotate = true;
-  private _initialPosition?: PositionProperty;
   private _initialEnableTranslate = true;
+  private _initialPosition?: PositionProperty;
   private _initialScreenPosition?: Cartesian2;
   private _entity?: Entity;
   private _position: Cartesian3 | undefined;
