@@ -55,6 +55,7 @@ export default class CesiumDnD {
   private _initialEnableRotate = true;
   private _initialEnableTranslate = true;
   private _initialPosition?: PositionProperty;
+  private _initialHeight?: number | undefined;
   private _initialScreenPosition?: Cartesian2;
   private _entity?: Entity;
   private _position: Cartesian3 | undefined;
@@ -134,9 +135,18 @@ export default class CesiumDnD {
       if (c) {
         const height = this.viewer.scene.globe.ellipsoid.cartesianToCartographic(c).height;
         this._ellipsoid = CesiumDnD.enlargeEllipsoid(this.viewer.scene.globe.ellipsoid, height);
+
+        if (
+          this.viewer.scene.mode === SceneMode.SCENE2D ||
+          this.viewer.scene.mode === SceneMode.COLUMBUS_VIEW
+        ) {
+          this._initialHeight = height;
+        } else {
+          this._initialHeight = undefined;
+        }
       }
 
-      const pos = this._convertCartesian2ToPosition(e.position);
+      const pos = this._resetHeight(this._convertCartesian2ToPosition(e.position));
       const ctx = this._context(pos, e.position);
       if (ctx && this.options?.onDrag?.(entity, pos, ctx) === false) {
         this._initialPosition = undefined;
@@ -170,7 +180,7 @@ export default class CesiumDnD {
     clearTimeout(this._timeout);
     if (!this._entity || this.viewer.isDestroyed() || !e?.endPosition) return;
 
-    const pos = this._convertCartesian2ToPosition(e.endPosition);
+    const pos = this._resetHeight(this._convertCartesian2ToPosition(e.endPosition));
     const ctx = this._context(pos, e.endPosition);
     if (!ctx) return;
 
@@ -201,11 +211,12 @@ export default class CesiumDnD {
     this.viewer.scene.screenSpaceCameraController.enableTranslate = this._initialEnableTranslate;
     this.viewer.canvas.removeEventListener("blur", this.cancelDragging);
 
-    const pos = this._convertCartesian2ToPosition(e.position);
+    const pos = this._resetHeight(this._convertCartesian2ToPosition(e.position));
     const ctx = this._context(pos, e.position);
 
     this._initialPosition = undefined;
     this._initialScreenPosition = undefined;
+    this._initialHeight = undefined;
     this._ellipsoid = undefined;
 
     if (ctx && this.options?.onDrop?.(entity, pos, ctx) !== false && pos) {
@@ -235,6 +246,19 @@ export default class CesiumDnD {
       position,
       this._ellipsoid ?? this.viewer.scene.globe.ellipsoid,
     );
+  }
+
+  private _resetHeight(position: Cartesian3 | undefined): Cartesian3 | undefined {
+    if (
+      position &&
+      (this.viewer.scene.mode === SceneMode.SCENE2D ||
+        this.viewer.scene.mode === SceneMode.COLUMBUS_VIEW) &&
+      this._initialHeight
+    ) {
+      const c = this.viewer.scene.globe.ellipsoid.cartesianToCartographic(position);
+      return Cartesian3.fromRadians(c.longitude, c.latitude, this._initialHeight);
+    }
+    return position;
   }
 
   private static enlargeEllipsoid(e: Ellipsoid, m: number): Ellipsoid {
