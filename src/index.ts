@@ -141,6 +141,8 @@ export default class CesiumDnD {
           this.viewer.scene.mode === SceneMode.COLUMBUS_VIEW
         ) {
           this._initialHeight = height;
+        } else {
+          this._initialHeight = undefined;
         }
       }
 
