@@ -8,8 +8,6 @@ declare global {
   }
 }
 
-window.CESIUM_BASE_URL = "/cesium";
-
 const viewer = new Viewer("cesium");
 viewer.entities.add({
   name: "Example1",

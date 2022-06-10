@@ -17,7 +17,7 @@ yarn add cesium cesium-dnd
 Or
 
 ```html
-<script src="https://unpkg.com/cesium-dnd@1.0.0/dist/cesiumdnd.umd.production.min.js"></script>
+<script src="https://unpkg.com/cesium-dnd@latest/dist/cesium-dnd.umd.js"></script>
 <script>
   const viewer = new Cesium.Viewer("cesiumContainer");
   new CesiumDnD(viewer);
