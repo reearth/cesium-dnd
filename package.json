@@ -1,8 +1,6 @@
 {
   "version": "1.0.3",
   "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
   "files": [
     "dist",
     "src"
@@ -11,21 +9,15 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build --format cjs,esm,umd --name CesiumDnD",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build --format cjs,esm,umd --name CesiumDnD",
+    "build": "vite build",
+    "test": "vitest",
+    "lint": "eslint .",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "prepare": "husky install",
+    "lint-staged": "lint-staged"
   },
   "peerDependencies": {
     "cesium": "*"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
   },
   "prettier": {
     "printWidth": 100,
@@ -35,31 +27,50 @@
     "singleQuote": false,
     "trailingComma": "all",
     "bracketSpacing": true,
-    "jsxBracketSameLine": true,
+    "bracketSameLine": true,
     "arrowParens": "avoid",
     "proseWrap": "preserve"
   },
   "name": "cesium-dnd",
   "author": "HideBa",
-  "module": "dist/cesiumdnd.esm.js",
+  "main": "dist/cesium-dnd.umd.js",
+  "module": "dist/cesium-dnd.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/cesium-dnd.es.js",
+      "require": "./dist/cesium-dnd.umd.js"
+    }
+  },
+  "typings": "dist/index.d.ts",
   "size-limit": [
     {
-      "path": "dist/cesiumdnd.cjs.production.min.js",
+      "path": "dist/cesium-dnd.umd.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/cesiumdnd.esm.js",
+      "path": "dist/cesium-dnd.es.js",
       "limit": "10 KB"
     }
   ],
+  "lint-staged": {
+    "*.js": "eslint . --fix",
+    "*.ts": "eslint . --fix"
+  },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^5.0.1",
-    "@types/cesium": "^1.67.14",
-    "cesium": "^1.83.0",
-    "husky": "^7.0.1",
-    "size-limit": "^5.0.1",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.3.0",
-    "typescript": "^4.3.5"
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "@types/cesium": "^1.70.0",
+    "cesium": "^1.94.2",
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.1",
+    "prettier": "^2.6.2",
+    "size-limit": "^7.0.8",
+    "typescript": "^4.7.3",
+    "vite": "^2.9.10",
+    "vite-plugin-dts": "^1.2.0",
+    "vitest": "^0.14.1"
   }
 }

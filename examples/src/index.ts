@@ -1,5 +1,6 @@
+import "./style.css";
 import { Viewer, Cartesian3, Color } from "cesium";
-import CesiumDnD from "../src";
+import CesiumDnD from "../../src";
 
 declare global {
   interface Window {
