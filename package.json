@@ -6,7 +6,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=22.18.0"
   },
   "scripts": {
     "build": "vite build",
@@ -57,20 +57,20 @@
     "*.ts": "eslint . --fix"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.8",
-    "@types/cesium": "^1.70.0",
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "@types/cesium": "^1.70.4",
     "cesium": "^1.94.2",
-    "eslint": "^8.17.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-config-react-app": "^7.0.1",
-    "eslint-plugin-prettier": "^4.0.0",
-    "husky": "^8.0.0",
-    "lint-staged": "^13.0.1",
-    "prettier": "^2.6.2",
-    "size-limit": "^7.0.8",
-    "typescript": "^4.7.3",
-    "vite": "^2.9.10",
-    "vite-plugin-dts": "^1.2.0",
-    "vitest": "^0.14.1"
+    "eslint-plugin-prettier": "^5.5.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.4",
+    "prettier": "^3.6.2",
+    "size-limit": "^11.2.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.0.6",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.4"
   }
 }
