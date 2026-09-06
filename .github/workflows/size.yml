@@ -6,6 +6,10 @@ jobs:
     env:
       CI_JOB_NUMBER: 1
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2
+        with:
+          egress-policy: audit
       - uses: actions/checkout@v1
       - uses: andresz1/size-limit-action@v1
         with:
