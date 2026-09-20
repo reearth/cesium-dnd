@@ -59,7 +59,7 @@
   "devDependencies": {
     "@size-limit/preset-small-lib": "^7.0.8",
     "@types/cesium": "^1.70.0",
-    "cesium": "^1.94.2",
+    "cesium": "^1.145.0",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-react-app": "^7.0.1",
